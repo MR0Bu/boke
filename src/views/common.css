@@ -1,0 +1,146 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+
+    /* height: 100%;
+    background-image: url(1.mp4);
+    background-position: center;
+    background-size:100%;
+    background-repeat: no-repeat; */
+    .videoContainer {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: -100;
+    }
+
+    .videoContainer:before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: block;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        background: rgba(25, 29, 34, .65);
+    }
+}
+
+.nav {
+    width: 100%;
+    height: 100px;
+    background-color: rgba(54, 54, 54, 0.36);
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.nav img {
+    width: 60px;
+    height: 60px;
+    margin: 0 10px 0 20px;
+    border-radius: 50%;
+}
+
+.nav .title {
+    width: 83%;
+    font-size: 200%;
+    color: white;
+}
+
+.nav a {
+    width: 50px;
+    color: white;
+    text-decoration: none;
+}
+
+.nav .you {
+    border: none;
+    width: auto;
+    height: auto;
+    font-weight: 700;
+    font-size: x-large;
+    text-align: center;
+    color: pink;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.parent {
+    width: 1000px;
+    height: calc(100% - 50px);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.parent .left {
+    height: 100%;
+    width: 200px;
+}
+
+.parent .right {
+    height: 100%;
+    width: 795px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+}
+
+.parent .chuang {
+    height: 800px;
+    width: 795px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+}
+
+.parent .chuang input {
+    height: 500px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+}
+
+.left .card {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 30px;
+}
+
+.left .card img {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.left .card .name {
+    display: block;
+
+    font-size: 30px;
+    font-weight: 700;
+    text-align: center;
+    padding: 5px;
+}
+
+.left .card a {
+    display: block;
+    width: 140px;
+    text-decoration: none;
+    color: gray;
+    text-align: center;
+    padding: 5px;
+}
+
+.left .card .one {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px;
+}

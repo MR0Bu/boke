@@ -1,0 +1,29 @@
+{
+  "name": "clientt",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ant-design/icons-vue": "^6.1.0",
+    "@element-plus/icons-vue": "^2.3.1",
+    "@vitejs/plugin-vue-jsx": "^3.0.1",
+    "@vueuse/core": "^10.1.2",
+    "ant-design-vue": "^4.2.1",
+    "axios": "^1.4.0",
+    "element-plus": "^2.7.3",
+    "vue": "^3.2.47",
+    "vue-request": "^2.0.0-rc.4",
+    "vue-router": "^4.2.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.1.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.3.2",
+    "vue-tsc": "^1.4.2"
+  }
+}

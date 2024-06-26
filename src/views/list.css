@@ -1,0 +1,51 @@
+.article {
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+
+
+.article .title {
+    font-size: 250%;
+    text-align: center;
+    margin: 10px;
+}
+
+.article .date {
+    font-size: 150%;
+    display: block;
+    color: green;
+    text-decoration: none;
+    text-align: center;
+    margin: 5px;
+}
+
+.article .desc {
+    font-size: 175%;
+    text-indent: 2em;
+    margin: 5px;
+}
+
+.article .more {
+    display: block;
+    width: 100px;
+    height: 30px;
+
+    line-height: 30px;
+    text-align: center;
+
+    margin: 0;
+    text-decoration: none;
+    border: 1px solid black;
+    color: black;
+    background-color: rgb(64, 178, 212);
+}
+
+.article .more:active {
+    background-color: black;
+    color: white;
+}
+
+.article .cz {
+    display: flex;
+    justify-content: center;
+}
