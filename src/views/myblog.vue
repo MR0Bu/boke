@@ -12,7 +12,30 @@ function Post() {
     router.push('/post')
 }
 function Home() {
+    if (sessionStorage.getItem('UserId') != '') {
+        sessionStorage.removeItem('UserId')
+    }
     router.push('/home')
+}
+
+//好友列表
+const drawer = ref(false)
+const friends = ref()
+//好友昵称
+//弹窗
+const FriendNoteNameVisible = ref(false)
+const FriendNoteName = ref()
+function ChangeName(friendId: any) {
+    sessionStorage.setItem('friendId', friendId)
+    FriendNoteNameVisible.value = true
+}
+async function Note() {
+    if (FriendNoteName.value != null) {
+        message.success('修改成功!', 2)
+    }
+    const resp = await axios.post(`UserFriend/updateFriendNoteName`, { friendId: sessionStorage.getItem('friendId'), userFriendNoteName: FriendNoteName.value }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+    // console.log(resp.data.data)
+    location.reload()
 }
 
 //跳转详细页
@@ -176,17 +199,51 @@ async function update() {
     const resp = await axios.get(`user/getUserStatistics`)
     User.value = resp.data.data
     updateUser.value.userName = User.value.userName
-    console.log(User.value)
+    // console.log(User.value)
     //已登录用户博客信息
     handleCurrentChange(1)
     //搜索框联想
     const resp3 = await axios.get(`Article/out/getAllTitle`)
     // console.log(resp3.data.data)
     loadAll(resp3.data.data)
+
+    //好友
+    const resp1 = await axios.get(`UserFriend/getMyFriends`)
+    console.log(resp1.data.data)
+    friends.value = resp1.data.data
 }
 onMounted(() => update());
 </script>
 <template>
+    <!-- 好友弹窗 -->
+    <el-drawer size="20%" v-model="drawer" title="好友列表">
+        <el-divider />
+        <div style="display: flex;width: 100%;margin: 2%;height: 6%;" v-for="c of friends">
+            <img v-bind:src="c?.userFriendProfilePhoto" style=" width: auto;border-radius: 50%;height: 100%;">
+            <div style="font-size:x-large;font-weight: bold;align-content: center;margin-left: 5%;"
+                v-if="c?.userFriendNoteName == null">
+                {{ c?.userFriendName }}
+            </div>
+            <div style="font-size:x-large;font-weight: bold;align-content: center;margin-left: 5%;"
+                v-if="c?.userFriendNoteName != null">
+                {{ c?.userFriendNoteName }}
+            </div>
+            <div style="align-content: center;margin-left: auto;">
+                <el-button @click="ChangeName(c?.userFriendId)">修改昵称</el-button>
+            </div>
+        </div>
+    </el-drawer>
+    <!-- 修改昵称弹窗 -->
+    <el-dialog v-model="FriendNoteNameVisible" title="修改好友昵称" width="500" align-center @close="Note"
+        @keydown.enter="FriendNoteNameVisible = false">
+        <div style="display: flex;font-size: large;justify-content: center;">
+            <div style="align-content: center;">昵称:</div><el-input v-model="FriendNoteName" placeholder="修改你的好友昵称"
+                style="width: 60%;"></el-input>
+        </div>
+        <template #footer>
+            <el-button @click="FriendNoteNameVisible = false">确定</el-button>
+        </template>
+    </el-dialog>
     <!-- 修改弹窗 -->
     <el-dialog v-model="SettingVisible" title="设置" width="700" align-center @close="flash"
         @key:enter="SettingVisible = false">
@@ -240,6 +297,8 @@ onMounted(() => update());
             </el-autocomplete>
         </div>
         <a-button style="border: none;background-color: rgba(0, 0, 0, 0.2);" @click="Post" class="you">发表</a-button>
+        <a-button style="border: none;background-color: rgba(0, 0, 0, 0.2);" @click="drawer = true"
+            class="you">好友</a-button>
         <a-button style="border: none;background-color: rgba(0, 0, 0, 0.2);" @click="Home" class="you">主页</a-button>
 
         <img v-bind:src="URl">

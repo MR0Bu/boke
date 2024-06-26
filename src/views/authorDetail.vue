@@ -4,6 +4,7 @@ import axios from '../api/request';
 import { onMounted, ref } from "vue";
 import { LikeOutlined } from '@ant-design/icons-vue';
 import { StarFilled, ChatDotRound, Search } from '@element-plus/icons-vue'
+import { message } from 'ant-design-vue';
 
 //路由
 function Post() {
@@ -104,7 +105,7 @@ function colorInId(Ids: any) {
         temp.value.articleLikeCount = Ids[index].articleLikeCount
         LikeColor.value[index] = temp.value
     }
-    console.log(LikeColor.value)
+    // console.log(LikeColor.value)
 }
 function ReturnColor(blogId: any) {
     for (let index = 0; index < LikeColor.value.length; index++) {
@@ -137,6 +138,35 @@ async function ChangeColor(blogId: any) {
             console.log(resp)
         }
     }
+}
+
+
+//好友列表
+const drawer = ref(false)
+//判断是否好友
+const isFriends = ref()
+//添加好友
+async function addFriend() {
+    const resp = await axios.post(`UserFriend/add`, { friendId: User.value.userId }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+    // console.log(resp.data.data)
+    location.reload()
+}
+const friends = ref()
+//好友昵称
+//弹窗
+const FriendNoteNameVisible = ref(false)
+const FriendNoteName = ref()
+function ChangeName(friendId: any) {
+    sessionStorage.setItem('friendId', friendId)
+    FriendNoteNameVisible.value = true
+}
+async function Note() {
+    if (FriendNoteName.value != null) {
+        message.success('修改成功!', 2)
+    }
+    const resp = await axios.post(`UserFriend/updateFriendNoteName`, { friendId: sessionStorage.getItem('friendId'), userFriendNoteName: FriendNoteName.value }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+    // console.log(resp.data.data)
+    location.reload()
 }
 
 
@@ -205,13 +235,13 @@ const handleSizeChange = (val: number) => {
 const handleCurrentChange = async (val: number) => {
     // console.log(val)
     const resp = await axios.post(`Article/getArticleByUserId`, { page: val, userId: sessionStorage.getItem('UserId') }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-    console.log(resp.data.data)
+    // console.log(resp.data.data)
     colorInId(resp.data.data)
     Blogs.value = resp.data.data
-    console.log(Blogs.value)
+    // console.log(Blogs.value)
     const resp1 = await axios.post(`Article/getArticleByUserIdSize`, { userId: sessionStorage.getItem('UserId') }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
     totalPages.value = resp1.data.data
-    console.log(resp1.data.data)
+    // console.log(resp1.data.data)
 }
 
 const User = ref()
@@ -227,20 +257,59 @@ async function update() {
     }
     const UserId = sessionStorage.getItem('UserId')
     // console.log(UserId)
-
     const resp = await axios.get(`user/getUserStatisticsByUserId/${UserId}`)
     // console.log(resp.data.data)
     User.value = resp.data.data
     // console.log(User.value)
+
+    const resp2 = await axios.post(`UserFriend/isMyFriend`, { friendId: UserId }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+    isFriends.value = resp2.data.data
+    console.log(isFriends.value)
+
     handleCurrentChange(1)
+
     //搜索框联想
     const resp3 = await axios.get(`Article/out/getAllTitle`)
     // console.log(resp3.data.data)
     loadAll(resp3.data.data)
+
+    //好友
+    const resp1 = await axios.get(`UserFriend/getMyFriends`)
+    console.log(resp1.data.data)
+    friends.value = resp1.data.data
 }
 onMounted(() => update())
 </script>
 <template>
+    <!-- 好友弹窗 -->
+    <el-drawer size="20%" v-model="drawer" title="好友列表">
+        <el-divider />
+        <div style="display: flex;width: 100%;margin: 2%;height: 6%;" v-for="c of friends">
+            <img v-bind:src="c?.userFriendProfilePhoto" style=" width: auto;border-radius: 50%;height: 100%;">
+            <div style="font-size:x-large;font-weight: bold;align-content: center;margin-left: 5%;"
+                v-if="c?.userFriendNoteName == null">
+                {{ c?.userFriendName }}
+            </div>
+            <div style="font-size:x-large;font-weight: bold;align-content: center;margin-left: 5%;"
+                v-if="c?.userFriendNoteName != null">
+                {{ c?.userFriendNoteName }}
+            </div>
+            <div style="align-content: center;margin-left: auto;">
+                <el-button @click="ChangeName(c?.userFriendId)">修改昵称</el-button>
+            </div>
+        </div>
+    </el-drawer>
+    <!-- 修改昵称弹窗 -->
+    <el-dialog v-model="FriendNoteNameVisible" title="修改好友昵称" width="500" align-center @close="Note"
+        @keydown.enter="FriendNoteNameVisible = false">
+        <div style="display: flex;font-size: large;justify-content: center;">
+            <div style="align-content: center;">昵称:</div><el-input v-model="FriendNoteName" placeholder="修改你的好友昵称"
+                style="width: 60%;"></el-input>
+        </div>
+        <template #footer>
+            <el-button @click="FriendNoteNameVisible = false">确定</el-button>
+        </template>
+    </el-dialog>
     <!-- 登录弹窗 -->
     <el-dialog v-model="LoginVisible" title="请登录您的账号" width="500" align-center>
         <div style="display: block;width: 100%;">
@@ -384,6 +453,8 @@ onMounted(() => update())
             </el-autocomplete>
         </div>
         <a-button style="border: none;background-color: rgba(0, 0, 0, 0.2);" @click="Post" class="you">发表</a-button>
+        <a-button style="border: none;background-color: rgba(0, 0, 0, 0.2);" @click="drawer = true"
+            class="you">好友</a-button>
         <a-button style="border: none;background-color: rgba(0, 0, 0, 0.2);" @click="Home" class="you">主页</a-button>
 
         <img v-bind:src="URL" @click="myblog">
@@ -408,6 +479,7 @@ onMounted(() => update())
             <el-divider>
                 <el-icon style="color: red;"><star-filled /></el-icon>
             </el-divider>
+            <el-button @click="addFriend" v-if="!isFriends?.isMyFriend">关注他</el-button>
         </div>
         <!-- 博客 -->
         <div
