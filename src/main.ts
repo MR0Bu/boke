@@ -1,8 +1,6 @@
 import { createApp } from 'vue'
 import './views/common.css'
-import './views/login.css'
 import './views/list.css'
-import './views/moreList.css'
 import 'ant-design-vue/dist/reset.css';
 import antdv from 'ant-design-vue'
 import ElementPlus from 'element-plus'
